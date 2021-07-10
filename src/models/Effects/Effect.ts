@@ -7,7 +7,7 @@ export default abstract class Effect {
     public abstract affectsBrightness: boolean;
     public abstract affectsColour: boolean;
 
-    protected cst: CancellationToken | undefined;
+    private cst: CancellationToken | undefined;
     private work: Promise<void> | undefined;
 
     constructor(id: string) {
@@ -38,7 +38,7 @@ export class ExternalEffect extends Effect {
     public affectsColour = true;
 
     protected async doWork(device: VirtualDevice, cst: CancellationToken): Promise<void> {
-
+        // Do nothing, the effect is handled by the child process
     }
 
 }
@@ -52,7 +52,7 @@ export class NoEffect extends Effect {
     }
     
     protected async doWork(device: VirtualDevice, cst: CancellationToken): Promise<void> {
-
+        // Do nothing
     }
 
 }

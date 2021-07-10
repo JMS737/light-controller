@@ -26,7 +26,7 @@ export class Blink extends Effect {
             await delay(1000);
         }
         
-        if (!this.cst?.immediate)
+        if (!cst?.immediate)
             await device.setBrightnessSmooth(originalBrightness);
     }
 
@@ -59,7 +59,7 @@ export class Pulse extends Effect {
             await delay(this.PULSE_DELAY);
         }
         
-        if (!this.cst?.immediate)
+        if (!cst?.immediate)
             await device.setBrightnessSmooth(originalBrightness);
         // else
         //     device.brightness = originalBrightness;
@@ -97,7 +97,7 @@ export class Rainbow extends Effect {
             await delay(this.HUE_DELAY);
         }
 
-        if (!this.cst?.immediate)
+        if (!cst?.immediate)
             await device.setColourSmooth(originalHue, originalSaturation);
         // else {
         //     device.hue = originalHue;

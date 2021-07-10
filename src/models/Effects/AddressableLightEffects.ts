@@ -5,7 +5,7 @@ import Rgb from "../Rgb";
 import { delay } from "../../helpers/AsyncHelpers";
 
 export class Scroll extends Effect {
-    public affectsBrightness =false;
+    public affectsBrightness = false;
     public affectsColour = true;
 
     constructor() {
@@ -18,22 +18,26 @@ export class Scroll extends Effect {
         const originalPixels = [...device.pixels];
 
         const pixels = new Array<Rgb>(device.pixelCount);
-
+        let j = 0;
         while (!cst.isCancellationRequested) {
-            for (let j = 0; j < 255; j++) {
-                if (cst.isCancellationRequested) break;
-
-                for (let i = 0; i < device.pixelCount; i++) {
-                    if (cst.isCancellationRequested) break;
-                    const pixel_index = Math.floor(i * 256 / device.pixelCount) + j;
-                    pixels[i] = this.wheel(pixel_index & 255);
-                }
-                device.setPixels(pixels);
-                await delay(0.001);
+            if (cst.isCancellationRequested) {
+                break;
             }
+
+            for (let i = 0; i < device.pixelCount; i++) {
+                if (cst.isCancellationRequested) {
+                    break;
+                }
+                const pixel_index = Math.floor(i * 256 / device.pixelCount) + j;
+                pixels[i] = this.wheel(pixel_index & 255);
+            }
+            device.setPixels(pixels);
+            await delay(10);
+            j = ++j % 255;
+
         }
 
-        if (!this.cst?.immediate) {
+        if (!cst.immediate) {
             await device.setPixelsSmooth(originalPixels);
         }
     }
@@ -44,8 +48,7 @@ export class Scroll extends Effect {
         if (pos < 0 || pos > 255) {
             return rgb;
         }
-        else if (pos < 85)
-        {
+        else if (pos < 85) {
             rgb.r = Math.floor(pos * 3);
             rgb.g = Math.floor(255 - pos * 3);
             rgb.b = 0;
