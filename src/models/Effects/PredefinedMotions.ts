@@ -94,14 +94,8 @@ export async function Highlight(light: AddressableRgbStrip, palette: Palette, ar
         }
 
         let highlight: HighlightPoint | undefined;
-        if (Math.random() < DELAY_SECONDS / speed) {
-            let color: Rgb;
-            if (Math.random() < firstFrequency) {
-                color = palette.colors[0];
-            }
-            else {
-                color = palette.colors[1 + Math.floor(Math.random() * palette.colors.length - 1)];
-            }
+        if (Math.random() < DELAY_SECONDS / speed && Math.random() < firstFrequency) {
+            const color = palette.colors[1 + Math.floor(Math.random() * palette.colors.length - 1)];
             highlight = new HighlightPoint(Math.round(Math.random() * pixels.length), 14, color);
         }
 
