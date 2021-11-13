@@ -27,7 +27,7 @@ export class Highlight extends Effect {
                 new Rgb(255, 0, 255)
             ]),
             [
-                new MotionParameter("Speed", 2),
+                new MotionParameter("Speed", 0.5),
                 new MotionParameter("First Colour Frequency", 0.4)
             ],
             cst);
