@@ -86,6 +86,7 @@ export async function Highlight(light: AddressableRgbStrip, palette: Palette, ar
     const originalPixels = [...light.pixels];
 
     const pixels = new Array<Rgb>(light.pixelCount);
+    pixels.fill(new Rgb(0, 0, 0));
 
     while (!cst.isCancellationRequested) {
         if (cst.isCancellationRequested) {
