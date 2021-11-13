@@ -33,7 +33,7 @@ export default class DimmableLight extends Light implements IDimmableLight {
         }
         
         if (this.state == false && this._currentEffect) {
-            await this._currentEffect.cancel();
+            await this._currentEffect.cancel(true);
         }
         
         this.state = state;
