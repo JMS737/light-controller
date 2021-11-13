@@ -110,9 +110,9 @@ export async function Highlight(light: AddressableRgbStrip, palette: Palette, ar
                 break;
             }
 
-            pixels[i].r = Math.max(0, pixels[i].r -= 255 / STEPS * (speed * 5));
-            pixels[i].g = Math.max(0, pixels[i].g -= 255 / STEPS * (speed * 5));
-            pixels[i].b = Math.max(0, pixels[i].b -= 255 / STEPS * (speed * 5));
+            pixels[i].r = Math.max(0, pixels[i].r -= 255 / (STEPS * (speed * 5)));
+            pixels[i].g = Math.max(0, pixels[i].g -= 255 / (STEPS * (speed * 5)));
+            pixels[i].b = Math.max(0, pixels[i].b -= 255 / (STEPS * (speed * 5)));
 
             if (highlight) {
                 pixels[i] = highlight.calculate(i);
