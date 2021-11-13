@@ -66,8 +66,11 @@ class HighlightPoint {
         this._color = color;
     }
 
-    public calculate(pixelNumber: number): Rgb {
-        const factor = 1 - Math.min(1, ((1 / this._radius) * Math.abs(this.pixel - pixelNumber)));
+    public calculate(pixelNumber: number): Rgb | undefined {
+        const factor = 1 - Math.min(1, Math.pow((1 / this._radius) * Math.abs(this.pixel - pixelNumber), 3));
+        if (factor == 0) {
+            return undefined;
+        }
 
         return new Rgb(this._color.r * factor, this._color.g * factor, this._color.b * factor);
     }
@@ -98,7 +101,7 @@ export async function Highlight(light: AddressableRgbStrip, palette: Palette, ar
         let highlight: HighlightPoint | undefined;
         if (Math.random() < DELAY_SECONDS / speed && Math.random() < firstFrequency) {
             const color = palette.colors[1 + Math.floor(Math.random() * palette.colors.length - 1)];
-            highlight = new HighlightPoint(Math.round(Math.random() * pixels.length), 14, color);
+            highlight = new HighlightPoint(Math.round(Math.random() * pixels.length), 8, color);
         }
 
         for (let i = 0; i < light.pixelCount; i++) {
@@ -111,7 +114,10 @@ export async function Highlight(light: AddressableRgbStrip, palette: Palette, ar
             pixels[i].b = Math.max(0, pixels[i].b -= 255 / (STEPS * (speed * 5)));
 
             if (highlight) {
-                pixels[i] = highlight.calculate(i);
+                const color = highlight.calculate(i);
+                if (color) {
+                    pixels[i] = color;
+                }
             }
         }
 
