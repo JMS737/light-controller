@@ -8,7 +8,7 @@ import Palette from "./Palette";
 
 export async function Flow(light: AddressableRgbStrip, palette: Palette, args: MotionParameter[], cst: CancellationToken): Promise<void> {
     const speed = args.filter(p => p._name == "Speed")[0]._value as number;
-    const reversed = args.filter(p => p._name == "Reversed")[0]._value as boolean;
+    const reversed = args.filter(p => p._name == "Reversed")[0]?._value as boolean;
     const STEPS = 50;
 
     await light.setState(true);
