@@ -34,6 +34,10 @@ export default class DimmableLight extends Light implements IDimmableLight {
             await this.currentStateTask;
         }
 
+        if (this._currentEffect?.affectsBrightness) {
+            await this._currentEffect.cancel(true);
+        }
+
         this.currentStateToken = new CancellationToken();
         this.currentStateTask = this.setStateAsync(this.currentStateToken);
     }
