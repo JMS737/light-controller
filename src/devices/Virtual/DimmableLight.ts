@@ -27,17 +27,16 @@ export default class DimmableLight extends Light implements IDimmableLight {
     }
 
     async setState(state: boolean): Promise<void> {
-        this.state = state;
-
         if (this.currentStateTask && this.currentStateToken) {
             this.currentStateToken.cancel();
             await this.currentStateTask;
         }
-
+        
         if (this.state == false && this._currentEffect) {
             await this._currentEffect.cancel();
         }
-
+        
+        this.state = state;
         this.currentStateToken = new CancellationToken();
         this.currentStateTask = this.setStateAsync(this.currentStateToken);
     }
