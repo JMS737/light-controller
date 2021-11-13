@@ -23,6 +23,7 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "^16.0.0",
     "@types/shelljs": "^0.8.9",
+    "@types/uuid": "^8.3.1",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
     "@typescript-eslint/parser": "^4.28.2",
     "chai": "^4.3.4",
@@ -40,6 +41,7 @@
     "colorsys": "^1.0.22",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "pigpio": "^3.3.1"
+    "pigpio": "^3.3.1",
+    "uuid": "^8.3.2"
   }
 }

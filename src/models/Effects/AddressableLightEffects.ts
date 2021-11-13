@@ -3,6 +3,31 @@ import { IAddressableRgbLight } from "../..//devices/Abstract/IVirtualLights";
 import Effect from "./Effect";
 import Rgb from "../Rgb";
 import { delay } from "../../helpers/AsyncHelpers";
+import VirtualDevice from "src/devices/Abstract/VirtualDevice";
+import { Flow as FlowMotion} from "../Effects/PredefinedMotions";
+import AddressableRgbStrip from "src/devices/Virtual/AddressableRgbStrip";
+import Palette from "./Palette";
+import { MotionParameter } from "./Motion";
+
+export class Flow extends Effect {
+    public affectsBrightness = false;
+    public affectsColour = true;
+
+    constructor() {
+        super("Flow");
+    }
+
+    protected async doWork(device: VirtualDevice, cst: CancellationToken): Promise<void> {
+        await FlowMotion(device as AddressableRgbStrip,
+            new Palette([
+                new Rgb(0, 255, 255),
+                new Rgb(255, 255, 0),
+                new Rgb(255, 0, 255)
+            ]),
+            [new MotionParameter("Speed", 1)],
+            cst);
+    }
+}
 
 export class Scroll extends Effect {
     public affectsBrightness = false;
