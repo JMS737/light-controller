@@ -42,7 +42,7 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
         }
         light.setPixels(pixels);
         await delay(DELAY);
-        tOffset += (speed / STEPS) % 1;
+        tOffset += ((1 / STEPS) / speed) % 1;
 
     }
 
