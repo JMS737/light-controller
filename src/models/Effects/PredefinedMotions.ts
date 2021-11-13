@@ -33,7 +33,7 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
                 break;
             }
 
-            t = (i / (light.pixelCount * (palette.colors.length / COLORS_TO_DISPLAY)) + tOffset) % 1;
+            t = (i / (light.pixelCount * (palette.colors.length / COLORS_TO_DISPLAY + 1)) + tOffset) % 1;
             if (reversed) {
                 t = 1 - t;
             }
