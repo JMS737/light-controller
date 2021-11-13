@@ -34,7 +34,7 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
             pixels[i] = InterpolateRgbRaw(palette.colors, t);
         }
         light.setPixels(pixels);
-        await delay(1 / STEPS);
+        await delay(1000 / STEPS);
         tOffset += (speed / STEPS) % 1;
 
     }
