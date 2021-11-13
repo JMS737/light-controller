@@ -1,3 +1,4 @@
+import { pathToFileURL } from "url";
 import AddressableRgbStrip from "../../devices/Virtual/AddressableRgbStrip";
 import { delay } from "../../helpers/AsyncHelpers";
 import CancellationToken from "../../helpers/CancellationToken";
@@ -11,6 +12,7 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
     const reversed = args.filter(p => p._name == "Reversed")[0]?._value as boolean ?? false;
     const DELAY = 20; // This is fixed at 20 milliseconds as going below 10 causing load issues and new requests don't get processed immediately.
     const STEPS = 1000 / DELAY;
+    const COLORS_TO_DISPLAY = Math.max(2, Math.min(palette.colors.length, args.filter(p => p._name == "Colours to Display")[0]?._value as number ?? 2));
 
     await light.setState(true);
 
@@ -31,7 +33,7 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
                 break;
             }
 
-            t = (i / light.pixelCount + tOffset) % 1;
+            t = (i / (light.pixelCount * (palette.colors.length / COLORS_TO_DISPLAY)) + tOffset) % 1;
             if (reversed) {
                 t = 1 - t;
             }
