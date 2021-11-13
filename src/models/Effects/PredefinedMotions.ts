@@ -102,7 +102,7 @@ export async function Highlight(light: AddressableRgbStrip, palette: Palette, ar
             else {
                 color = palette.colors[1 + Math.floor(Math.random() * palette.colors.length - 1)];
             }
-            highlight = new HighlightPoint(Math.round(Math.random() * pixels.length), 7, color);
+            highlight = new HighlightPoint(Math.round(Math.random() * pixels.length), 14, color);
         }
 
         for (let i = 0; i < light.pixelCount; i++) {
