@@ -7,6 +7,10 @@ export default abstract class Effect {
     public abstract affectsBrightness: boolean;
     public abstract affectsColour: boolean;
 
+    public get isCancelled(): boolean {
+        return this.cst?.isCancellationRequested ?? false;
+    }
+
     private cst: CancellationToken | undefined;
     private work: Promise<void> | undefined;
 

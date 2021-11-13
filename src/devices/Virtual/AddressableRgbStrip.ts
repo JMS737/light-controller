@@ -84,7 +84,7 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
     async setPixelsSmooth(pixels: Rgb[]): Promise<void> {
         if (!this.state) this.setState(true);
         
-        if (this._currentEffect?.affectsColour) {
+        if (this._currentEffect?.affectsColour && !this._currentEffect?.isCancelled) {
             await this._currentEffect.cancel(true);
         }
 
