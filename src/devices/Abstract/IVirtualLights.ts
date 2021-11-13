@@ -1,4 +1,4 @@
-import { Animations } from "src/models/Animations";
+import { Animations } from "../../models/Animations";
 import Hsv from "../../models/Hsv";
 import Rgb from "../../models/Rgb";
 import VirtualDevice from "./VirtualDevice";

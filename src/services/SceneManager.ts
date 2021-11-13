@@ -1,9 +1,9 @@
-import Motion, { MotionParameter } from "src/models/Effects/Motion";
-import Palette from "src/models/Effects/Palette";
-import { Flow, Hightlight } from "src/models/Effects/PredefinedMotions";
-import {palettes as predefinedPalettes} from "src/models/Effects/PredefinedPalettes";
-import Scene from "src/models/Effects/Scene";
-import Rgb from "src/models/Rgb";
+import Motion, { MotionParameter } from "../models/Effects/Motion";
+import Palette from "../models/Effects/Palette";
+import { Flow, Hightlight } from "../models/Effects/PredefinedMotions";
+import {palettes as predefinedPalettes} from "../models/Effects/PredefinedPalettes";
+import Scene from "../models/Effects/Scene";
+import Rgb from "../models/Rgb";
 
 export default class SceneManager {
     private _scenes: Scene[] = [];

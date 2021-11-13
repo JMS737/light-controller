@@ -1,5 +1,5 @@
-import AddressableRgbStrip from "src/devices/Virtual/AddressableRgbStrip";
-import CancellationToken from "src/helpers/CancellationToken";
+import AddressableRgbStrip from "../../devices/Virtual/AddressableRgbStrip";
+import CancellationToken from "../../helpers/CancellationToken";
 import Palette from "./Palette";
 
 export class MotionParameter {

@@ -3,9 +3,9 @@ import { IAddressableRgbLight } from "../..//devices/Abstract/IVirtualLights";
 import Effect from "./Effect";
 import Rgb from "../Rgb";
 import { delay } from "../../helpers/AsyncHelpers";
-import VirtualDevice from "src/devices/Abstract/VirtualDevice";
+import VirtualDevice from "../../devices/Abstract/VirtualDevice";
 import { Flow as FlowMotion} from "../Effects/PredefinedMotions";
-import AddressableRgbStrip from "src/devices/Virtual/AddressableRgbStrip";
+import AddressableRgbStrip from "../../devices/Virtual/AddressableRgbStrip";
 import Palette from "./Palette";
 import { MotionParameter } from "./Motion";
 

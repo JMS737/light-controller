@@ -1,7 +1,7 @@
-import AddressableRgbStrip from "src/devices/Virtual/AddressableRgbStrip";
-import { delay } from "src/helpers/AsyncHelpers";
-import CancellationToken from "src/helpers/CancellationToken";
-import { InterpolateRgbRaw } from "src/helpers/GradientHelper";
+import AddressableRgbStrip from "../../devices/Virtual/AddressableRgbStrip";
+import { delay } from "../../helpers/AsyncHelpers";
+import CancellationToken from "../../helpers/CancellationToken";
+import { InterpolateRgbRaw } from "../../helpers/GradientHelper";
 import Rgb from "../Rgb";
 import { MotionParameter } from "./Motion";
 import Palette from "./Palette";
