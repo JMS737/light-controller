@@ -1,5 +1,5 @@
 import { InterpolateHsv, InterpolateHsvLong, InterpolateHsvShort, InterpolateRgb, InterpolateRgbSingle } from "../../helpers/GradientHelper";
-import Effect, { ExternalEffect } from "../../models/Effects/Effect";
+import Effect, { ExternalEffect, SceneEffect } from "../../models/Effects/Effect";
 import Hsv from "../../models/Hsv";
 import Rgb from "../../models/Rgb";
 import { IAddressableRgbLight as IAddressableRgbLight } from "../Abstract/IVirtualLights";
@@ -13,8 +13,9 @@ import CancellationToken from "../../helpers/CancellationToken";
 import { delay } from "../../helpers/AsyncHelpers";
 import { constrain } from "../../helpers/MathHelper";
 import { DeviceType } from "../../helpers/DeviceType";
-import { Flow, Highlight, Scroll } from "../../models/Effects/AddressableLightEffects";
+import { Scroll } from "../../models/Effects/AddressableLightEffects";
 import IConfiguration from "../../services/IConfiguraiton";
+import SceneManager from "../../services/SceneManager";
 
 export default class AddressableRgbStrip extends RgbLight implements IAddressableRgbLight {
 
@@ -28,14 +29,16 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
     presetPath!: string;
 
     private _config: IConfiguration;
+    private _scenes: SceneManager;
 
-    constructor(id: number, physical: WS2812B, config: IConfiguration) {
+    constructor(id: number, physical: WS2812B, config: IConfiguration, scenes: SceneManager) {
         super(id, physical);
 
         this.type = DeviceType.WS2812B;
         this.physical = physical;
 
         this._config = config;
+        this._scenes = scenes;
 
         this.initializePresets();
     }
@@ -142,9 +145,13 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
 
     getEffects(): Effect[] {
         const effects = super.getEffects();
+        const scenes = this._scenes.scenes;
+        scenes.forEach(s => {
+            effects.push(new SceneEffect(s))
+        });
         effects.push(new Scroll());
-        effects.push(new Flow());
-        effects.push(new Highlight());
+        // effects.push(new Flow());
+        // effects.push(new Highlight());
 
         this.effects.map(e => effects.push(new ExternalEffect(e)));
 

@@ -1,8 +1,8 @@
 import Palette from "../models/Effects/Palette";
-import Scene from "../models/Effects/Scene";
+import { SceneDto } from "../models/Effects/Scene";
 import Rgb from "../models/Rgb";
 import IConfiguration from "./IConfiguraiton";
-import { promises as fs } from "fs";
+import { close, promises as fs } from "fs";
 import path from "path";
 
 export default class ConfigurationManager implements IConfiguration {
@@ -42,15 +42,12 @@ export default class ConfigurationManager implements IConfiguration {
         }
     }
 
-    public async getPresets(deviceId: number): Promise<string[]> {
+    //#region Presets
+
+    public getPresets(deviceId: number): Promise<string[]> {
         const presetPath = path.join(this._presetPath, deviceId.toString());
 
-        const files = await fs.readdir(presetPath);
-        for (let i = 0; i < files.length; i++) {
-            files[i] = files[i].replace(".json", "");
-        }
-
-        return files;
+        return this.getJsonFilenamesInDirectory(presetPath);
     }
 
     public async getPreset(deviceId: number, name: string): Promise<Rgb[]> {
@@ -83,29 +80,86 @@ export default class ConfigurationManager implements IConfiguration {
         await fs.rm(filename);
     }
 
-    getPalettes(): Promise<Palette[]> {
-        throw new Error("Method not implemented.");
-    }
-    getPalette(name: string): Promise<Palette> {
-        throw new Error("Method not implemented.");
-    }
-    savePalette(palette: Palette): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    deletePalette(palette: Palette): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    getScenes(): Promise<Scene[]> {
-        throw new Error("Method not implemented.");
-    }
-    getScene(name: string): Promise<Scene> {
-        throw new Error("Method not implemented.");
-    }
-    saveScene(scene: Scene): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-    deleteScene(scene: Scene): Promise<void> {
-        throw new Error("Method not implemented.");
+    //#endregion
+
+    //#region Palettes
+
+    public async getPalettes(): Promise<Palette[]> {
+        const files = await fs.readdir(this._palettePath);
+        const palettes: Palette[] = [];
+        for (let i = 0; i < files.length; i++) {
+            const palette = await this.getPaletteFromFile(files[i]);
+
+            palettes.push(palette);
+        }
+
+        return palettes;
     }
 
+    public async getPalette(name: string): Promise<Palette> {
+        return this.getPaletteFromFile(name + ".json");
+    }
+
+    public async savePalette(palette: Palette): Promise<void> {
+        const filename = path.join(this._palettePath, palette.id + ".json");
+        await fs.writeFile(filename, JSON.stringify(palette.colors));
+    }
+
+    public async deletePalette(palette: Palette): Promise<void> {
+        const filename = path.join(this._palettePath, palette.id + ".json");
+        await fs.rm(filename);
+    }
+
+    private async getPaletteFromFile(filename: string): Promise<Palette> {
+        const data = await fs.readFile(path.join(this._palettePath, filename));
+        return new Palette(JSON.parse(data.toString()), filename.replace(".json", ""));
+    }
+
+    //#endregion
+
+    //#region Scenes
+
+    public async getScenes(): Promise<SceneDto[]> {
+        const files = await fs.readdir(this._scenePath);
+        const scenes: SceneDto[] = [];
+
+        for (let i = 0; i < files.length; i++) {
+            const scene = await this.getSceneFromFile(files[i]);
+            scenes.push(scene);
+        }
+
+        return scenes;
+    }
+
+    public getScene(name: string): Promise<SceneDto> {
+        return this.getSceneFromFile(name + ".json");
+    }
+
+    public async saveScene(scene: SceneDto): Promise<void> {
+        const filename = path.join(this._scenePath, scene.name + ".json");
+
+        await fs.writeFile(filename, JSON.stringify(scene));
+    }
+
+    public async deleteScene(scene: SceneDto): Promise<void> {
+        const filename = path.join(this._scenePath, scene.name + ".json");
+        await fs.rm(filename);
+    }
+
+    private async getSceneFromFile(filename: string): Promise<SceneDto> {
+        const data = await fs.readFile(path.join(this._scenePath, filename));
+
+        return JSON.parse(data.toString());
+    }
+
+    //#endregion
+
+    private async getJsonFilenamesInDirectory(directory: string): Promise<string[]> {
+        const files = await fs.readdir(directory);
+        for (let i = 0; i < files.length; i++) {
+            files[i] = files[i].replace(".json", "");
+        }
+
+        return files;
+    }
 }

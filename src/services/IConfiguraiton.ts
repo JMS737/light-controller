@@ -1,5 +1,5 @@
 import Palette from "../models/Effects/Palette";
-import Scene from "../models/Effects/Scene";
+import { SceneDto } from "../models/Effects/Scene";
 import Rgb from "../models/Rgb";
 
 export default interface IConfiguration {
@@ -13,8 +13,8 @@ export default interface IConfiguration {
     savePalette(palette: Palette): Promise<void>;
     deletePalette(palette: Palette): Promise<void>;
     
-    getScenes(): Promise<Scene[]>;
-    getScene(name: string): Promise<Scene>;
-    saveScene(scene: Scene): Promise<void>;
-    deleteScene(scene: Scene): Promise<void>;
+    getScenes(): Promise<SceneDto[]>;
+    getScene(name: string): Promise<SceneDto>;
+    saveScene(scene: SceneDto): Promise<void>;
+    deleteScene(scene: SceneDto): Promise<void>;
 }

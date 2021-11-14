@@ -8,6 +8,7 @@ import { IDimmableLight, ILight, IRgbLight, IAddressableRgbLight } from "./devic
 import Hsv from "./models/Hsv";
 import DeviceFactory from "./helpers/DeviceFactory";
 import ConfigurationManager from "./services/ConfigurationManager";
+import SceneManager from "./services/SceneManager";
 
 // initialise configuration.
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -23,7 +24,9 @@ app.use(bodyParser.urlencoded({
 const deviceFilename = process.env.DEVICE_FILE;
 
 let deviceManager: IDeviceManager | undefined;
-const factory = new DeviceFactory(new ConfigurationManager());
+const sceneManager = new SceneManager(new ConfigurationManager());
+
+const factory = new DeviceFactory(new ConfigurationManager(), sceneManager);
 
 if (deviceFilename) {
     console.log(`Devices file: '${deviceFilename}'`);
