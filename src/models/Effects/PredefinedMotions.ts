@@ -25,7 +25,7 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
     const pixels = new Array<Rgb>(light.pixelCount);
 
     let tOffset = 0;
-
+    let first = true;
     while (!cst.isCancellationRequested) {
         if (cst.isCancellationRequested) {
             break;
@@ -45,7 +45,14 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
 
             pixels[i] = InterpolateRgbRaw(colors, t);
         }
-        light.setPixels(pixels);
+
+        if (first) {
+            first = false;
+            await light.setPixelsSmooth(pixels);
+        }
+        else {
+            light.setPixels(pixels);
+        }
         await delay(DELAY);
         tOffset += ((1 / STEPS) / speed) % 1;
 
@@ -98,6 +105,7 @@ export async function Highlight(light: AddressableRgbStrip, palette: Palette, ar
     const pixels = new Array<Rgb>(light.pixelCount);
     pixels.fill(new Rgb(0, 0, 0));
 
+    let first = true;
     while (!cst.isCancellationRequested) {
         if (cst.isCancellationRequested) {
             break;
@@ -126,7 +134,13 @@ export async function Highlight(light: AddressableRgbStrip, palette: Palette, ar
             }
         }
 
-        light.setPixels(pixels);
+        if (first) {
+            first = false;
+            light.setPixelsSmooth(pixels);
+        }
+        else {
+            light.setPixels(pixels);
+        }
         await delay(DELAY);
     }
 
