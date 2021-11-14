@@ -55,7 +55,6 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
         }
         await delay(DELAY);
         tOffset += ((1 / STEPS) / speed) % 1;
-
     }
 
     if (!cst.immediate) {
