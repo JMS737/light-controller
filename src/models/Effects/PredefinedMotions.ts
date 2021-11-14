@@ -13,6 +13,10 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
     const DELAY = 20; // This is fixed at 20 milliseconds as going below 10 causing load issues and new requests don't get processed immediately.
     const STEPS = 1000 / DELAY;
     const COLORS_TO_DISPLAY = Math.max(2, Math.min(palette.colors.length, args.filter(p => p._name == "Colours to Display")[0]?._value as number ?? 2));
+    const colors = [...palette.colors];
+    colors.push(colors[0]);
+    // TODO: To get a clean transition between the final colour and the first, the first colour needs to be added to the
+    // end of the list of colours used by this. This ensures t interpolates from the last to first colour.
 
     await light.setState(true);
 
@@ -33,12 +37,12 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
                 break;
             }
 
-            t = (i / (light.pixelCount * Math.ceil(palette.colors.length / COLORS_TO_DISPLAY + 1)) + tOffset) % 1;
+            t = (i / (light.pixelCount * Math.ceil(colors.length / COLORS_TO_DISPLAY + 1)) + tOffset) % 1;
             if (reversed) {
                 t = 1 - t;
             }
 
-            pixels[i] = InterpolateRgbRaw(palette.colors, t);
+            pixels[i] = InterpolateRgbRaw(colors, t);
         }
         light.setPixels(pixels);
         await delay(DELAY);
