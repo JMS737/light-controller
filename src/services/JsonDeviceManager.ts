@@ -8,9 +8,11 @@ import GroupFactory from "../helpers/GroupFactory";
 export default class JsonDeviceManager implements IDeviceManager {
     devices: VirtualDevice[] = [];
     private filename: string;
+    private _factory: DeviceFactory;
 
-    constructor(filename: string) {
+    constructor(filename: string, factory: DeviceFactory) {
         this.filename = filename;
+        this._factory = factory;
     }
 
     getDevice<T extends VirtualDevice>(id: number): T {
@@ -24,7 +26,7 @@ export default class JsonDeviceManager implements IDeviceManager {
             const devicesDetails = JSON.parse(data) as Devices;
 
             devicesDetails.devices.map(info => {
-                const device = DeviceFactory.Create(info);
+                const device = this._factory.Create(info);
 
                 if (device) {
                     device.initialise();

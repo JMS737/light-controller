@@ -6,6 +6,8 @@ import JsonDeviceManager from "./services/JsonDeviceManager";
 import IDeviceManager from "./services/IDeviceManager";
 import { IDimmableLight, ILight, IRgbLight, IAddressableRgbLight } from "./devices/Abstract/IVirtualLights";
 import Hsv from "./models/Hsv";
+import DeviceFactory from "./helpers/DeviceFactory";
+import ConfigurationManager from "./services/ConfigurationManager";
 
 // initialise configuration.
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -21,10 +23,11 @@ app.use(bodyParser.urlencoded({
 const deviceFilename = process.env.DEVICE_FILE;
 
 let deviceManager: IDeviceManager | undefined;
+const factory = new DeviceFactory(new ConfigurationManager());
 
 if (deviceFilename) {
     console.log(`Devices file: '${deviceFilename}'`);
-    deviceManager = new JsonDeviceManager(path.join(__dirname, deviceFilename));
+    deviceManager = new JsonDeviceManager(path.join(__dirname, deviceFilename), factory);
     deviceManager.loadDevices((devices) => {
         console.log(`Loaded ${devices.length} devices.`);
     });
@@ -451,7 +454,7 @@ app.put('/api/v3/lights/:id', (req, res) => {
 });
 
 // GET /api/v3/lights/{id}/presets
-app.get('/api/v3/lights/:id/presets', (req, res) => {
+app.get('/api/v3/lights/:id/presets', async (req, res) => {
     const id = parseInt(req.params.id);
 
     if (id == undefined) {
@@ -464,7 +467,7 @@ app.get('/api/v3/lights/:id/presets', (req, res) => {
     const device = deviceManager?.getDevice<IAddressableRgbLight>(id);
 
     if (device) {
-        const presets = device.getPresets();
+        const presets = await device.getPresets();
         return res.status(200).send(presets);
     } else {
         return res.status(500).send({
@@ -475,7 +478,7 @@ app.get('/api/v3/lights/:id/presets', (req, res) => {
 });
 
 // PUT /api/v3/lights/{id}/presets
-app.put('/api/v3/lights/:id/presets/save', (req, res) => {
+app.put('/api/v3/lights/:id/presets/save', async (req, res) => {
     const id = parseInt(req.params.id);
     const name = req.body.name;
 
@@ -496,7 +499,7 @@ app.put('/api/v3/lights/:id/presets/save', (req, res) => {
     const device = deviceManager?.getDevice<IAddressableRgbLight>(id);
 
     if (device) {
-        const presets = device.savePreset(name);
+        const presets = await device.savePreset(name);
         return res.status(200).send(presets);
     } else {
         return res.status(500).send({
@@ -507,7 +510,7 @@ app.put('/api/v3/lights/:id/presets/save', (req, res) => {
 });
 
 // DELETE /api/v3/lights/{id}/presets
-app.delete('/api/v3/lights/:id/presets/delete', (req, res) => {
+app.delete('/api/v3/lights/:id/presets/delete', async (req, res) => {
     const id = parseInt(req.params.id);
     const name = req.body.name;
 
@@ -528,7 +531,7 @@ app.delete('/api/v3/lights/:id/presets/delete', (req, res) => {
     const device = deviceManager?.getDevice<IAddressableRgbLight>(id);
 
     if (device) {
-        const presets = device.deletePreset(name);
+        const presets = await device.deletePreset(name);
         return res.status(200).send(presets);
     } else {
         return res.status(500).send({
@@ -539,7 +542,7 @@ app.delete('/api/v3/lights/:id/presets/delete', (req, res) => {
 });
 
 // PUT /api/v3/lights/{id}/presets
-app.put('/api/v3/lights/:id/presets', (req, res) => {
+app.put('/api/v3/lights/:id/presets', async (req, res) => {
     const id = parseInt(req.params.id);
     const name = req.body.name;
 
@@ -560,7 +563,7 @@ app.put('/api/v3/lights/:id/presets', (req, res) => {
     const device = deviceManager?.getDevice<IAddressableRgbLight>(id);
 
     if (device) {
-        const presets = device.loadPreset(name);
+        const presets = await device.loadPreset(name);
         return res.status(200).send(presets);
     } else {
         return res.status(500).send({
