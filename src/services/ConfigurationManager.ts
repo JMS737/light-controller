@@ -20,10 +20,26 @@ export default class ConfigurationManager implements IConfiguration {
     }
 
     private async init() {
-        await fs.mkdir(this._configPath);
-        await fs.mkdir(this._presetPath);
-        await fs.mkdir(this._palettePath);
-        await fs.mkdir(this._scenePath);
+        try {
+            await fs.mkdir(this._configPath);
+        } catch (error) {
+            // Do nothing
+        }
+        try {
+            await fs.mkdir(this._presetPath);
+        } catch (error) {
+            // Do nothing
+        }
+        try {
+            await fs.mkdir(this._palettePath);
+        } catch (error) {
+            // Do nothing
+        }
+        try {
+            await fs.mkdir(this._scenePath);
+        } catch (error) {
+            // Do nothing
+        }
     }
 
     public async getPresets(deviceId: number): Promise<string[]> {
