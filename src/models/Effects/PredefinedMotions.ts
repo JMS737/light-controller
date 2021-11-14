@@ -48,7 +48,7 @@ export async function Flow(light: AddressableRgbStrip, palette: Palette, args: M
 
         if (first) {
             first = false;
-            await light.setPixelsSmooth(pixels);
+            await light.setPixelsAsync(pixels, cst);
         }
         else {
             light.setPixels(pixels);
@@ -136,7 +136,7 @@ export async function Highlight(light: AddressableRgbStrip, palette: Palette, ar
 
         if (first) {
             first = false;
-            light.setPixelsSmooth(pixels);
+            await light.setPixelsAsync(pixels, cst);
         }
         else {
             light.setPixels(pixels);
