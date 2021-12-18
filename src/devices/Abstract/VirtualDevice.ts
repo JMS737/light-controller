@@ -22,7 +22,7 @@ export default abstract class VirtualDevice {
         const isExternal = effect instanceof ExternalEffect;
         if (effect && !isExternal) {
             if (this._currentEffect) {
-                this._currentEffect.cancel(undefined,
+                this._currentEffect.cancel(true,
                     () => effect.execute(this)
                 );
             } else {

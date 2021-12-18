@@ -1,5 +1,7 @@
+import AddressableRgbStrip from "src/devices/Virtual/AddressableRgbStrip";
 import VirtualDevice from "../../devices/Abstract/VirtualDevice";
 import CancellationToken from "../../helpers/CancellationToken";
+import Scene from "./Scene";
 
 export default abstract class Effect {
     public id: string;
@@ -7,7 +9,11 @@ export default abstract class Effect {
     public abstract affectsBrightness: boolean;
     public abstract affectsColour: boolean;
 
-    protected cst: CancellationToken | undefined;
+    public get isCancelled(): boolean {
+        return this.cst?.isCancellationRequested ?? false;
+    }
+
+    private cst: CancellationToken | undefined;
     private work: Promise<void> | undefined;
 
     constructor(id: string) {
@@ -38,9 +44,24 @@ export class ExternalEffect extends Effect {
     public affectsColour = true;
 
     protected async doWork(device: VirtualDevice, cst: CancellationToken): Promise<void> {
+        // Do nothing, the effect is handled by the child process
+    }
+}
 
+export class SceneEffect extends Effect {
+    public affectsBrightness = false;
+    public affectsColour = true;
+
+    private readonly _scene: Scene;
+
+    constructor(scene: Scene) {
+        super(scene.name);
+        this._scene = scene;
     }
 
+    protected async doWork(device: VirtualDevice, cst: CancellationToken): Promise<void> {
+        await this._scene.run(device as AddressableRgbStrip, cst);
+    }
 }
 
 export class NoEffect extends Effect {
@@ -52,7 +73,7 @@ export class NoEffect extends Effect {
     }
     
     protected async doWork(device: VirtualDevice, cst: CancellationToken): Promise<void> {
-
+        // Do nothing
     }
 
 }

@@ -1,4 +1,4 @@
-import { Animations } from "src/models/Animations";
+import { Animations } from "../../models/Animations";
 import Hsv from "../../models/Hsv";
 import Rgb from "../../models/Rgb";
 import VirtualDevice from "./VirtualDevice";
@@ -33,8 +33,8 @@ export interface IAddressableRgbLight extends IRgbLight {
     setColours(colours: Hsv[], interpolationType: string): void;
     setColoursSmooth(colours: Hsv[], interpolationType: string): Promise<void>;
     setAnimation(animation: Animations): void;
-    getPresets(): string[];
-    savePreset(name: string): void;
-    loadPreset(name: string): void;
-    deletePreset(name: string): void;
+    getPresets(): Promise<string[]>;
+    savePreset(name: string): Promise<void>;
+    loadPreset(name: string): Promise<void>;
+    deletePreset(name: string): Promise<void>;
 }

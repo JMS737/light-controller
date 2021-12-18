@@ -36,6 +36,19 @@ export function InterpolateRgb(colours: Hsv[], t: number): Hsv {
         tSegment));
 }
 
+export function InterpolateRgbRaw(colours: Rgb[], t: number): Rgb {
+    const segments = colours.length - 1;
+    const segmentRatio = 1 / segments;
+
+    // Get the index of the current segment (starting at 0).
+    const currentSegment = Math.floor(t / segmentRatio);
+
+    // Get the factor along this segment that t represents.
+    const tSegment = (t % segmentRatio) / segmentRatio;
+
+    return InterpolateRgbSingle(colours[currentSegment], colours[currentSegment + 1], tSegment);
+}
+
 export function InterpolateRgbSingle(a: Rgb, b: Rgb, t: number): Rgb {
     const rgb = new Rgb(
         Lerp(a.r, b.r, t),

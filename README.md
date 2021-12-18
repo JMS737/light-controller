@@ -13,6 +13,17 @@ Currently 4 types of light are supported:
     - "scroll"
     - "bounce"
     - "random" - Randomly pick out of the available colours. Maybe include a segment size to break the LED strip into segments
+    - Blob - "Like a lava lamp, random points on the strip will light up (along with the LEDs next too it with a falloff).
+        - Maybe include a value to change the average size of the blobs.
+- Simplify Effects
+    - Modify all effects by removing the affectsBrightness/affectsColor values (no effects should affect brightness, only pixels/color).
+    - Remove the NoEffect option. To cancel an effect, simply pick a new one or a solid colour.
+    - Allow effects to be paused when lights are turned off and resumed when turned on.
+        - Stop the cancellation of effects on state change
+    - Consider generalising motions to work with older device types and convert the old effects into motions (i.e. for flash/pulse/rainbow effects)
+        - Then consider removing the Effects classes or integrate it with the Scene class.
+- State
+    - Make the state/brightness/colour/pixels/effects persist and restored upon restart.
 
 ## Run as service (Raspberry Pi - systemctl)
 Run the following commands to register the service with systemd to allow it to start with the OS:

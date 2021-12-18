@@ -1,5 +1,5 @@
 import { InterpolateHsv, InterpolateHsvLong, InterpolateHsvShort, InterpolateRgb, InterpolateRgbSingle } from "../../helpers/GradientHelper";
-import Effect, { ExternalEffect } from "../../models/Effects/Effect";
+import Effect, { ExternalEffect, SceneEffect } from "../../models/Effects/Effect";
 import Hsv from "../../models/Hsv";
 import Rgb from "../../models/Rgb";
 import { IAddressableRgbLight as IAddressableRgbLight } from "../Abstract/IVirtualLights";
@@ -13,6 +13,9 @@ import CancellationToken from "../../helpers/CancellationToken";
 import { delay } from "../../helpers/AsyncHelpers";
 import { constrain } from "../../helpers/MathHelper";
 import { DeviceType } from "../../helpers/DeviceType";
+import { Scroll } from "../../models/Effects/AddressableLightEffects";
+import IConfiguration from "../../services/IConfiguraiton";
+import SceneManager from "../../services/SceneManager";
 
 export default class AddressableRgbStrip extends RgbLight implements IAddressableRgbLight {
 
@@ -25,22 +28,28 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
 
     presetPath!: string;
 
-    constructor(id: number, physical: WS2812B) {
+    private _config: IConfiguration;
+    private _scenes: SceneManager;
+
+    constructor(id: number, physical: WS2812B, config: IConfiguration, scenes: SceneManager) {
         super(id, physical);
 
         this.type = DeviceType.WS2812B;
         this.physical = physical;
 
+        this._config = config;
+        this._scenes = scenes;
+
         this.initializePresets();
     }
 
     initializePresets(): void {
-        this.presetPath = path.join("presets", this.id.toString());
-        fs.mkdir("presets", err => {
-            if (err) console.log(err);
+        this.presetPath = path.join(".config/presets", this.id.toString());
+        fs.mkdir(".config/presets", err => {
+            if (err && err.errno != -17) console.log(err);
         });
         fs.mkdir(this.presetPath, err => {
-            if (err) console.log(err);
+            if (err && err.errno != -17) console.log(err);
         });
     }
 
@@ -53,7 +62,7 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
 
     async setColourSmooth(hue?: number, saturation?: number, value?: number): Promise<void> {
         const hsv = this.validateHsv(hue, saturation, value);
-        
+
         this.hue = hsv.h;
         this.saturation = hsv.s;
 
@@ -82,8 +91,8 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
 
     async setPixelsSmooth(pixels: Rgb[]): Promise<void> {
         if (!this.state) this.setState(true);
-        
-        if (this._currentEffect?.affectsColour) {
+
+        if (this._currentEffect?.affectsColour && !this._currentEffect?.isCancelled) {
             await this._currentEffect.cancel(true);
         }
 
@@ -136,6 +145,13 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
 
     getEffects(): Effect[] {
         const effects = super.getEffects();
+        const scenes = this._scenes.scenes;
+        scenes.forEach(s => {
+            effects.push(new SceneEffect(s))
+        });
+        effects.push(new Scroll());
+        // effects.push(new Flow());
+        // effects.push(new Highlight());
 
         this.effects.map(e => effects.push(new ExternalEffect(e)));
 
@@ -227,41 +243,30 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
         this.physical.setPixels(pixels);
     }
 
-    getPresets(): string[] {
-        const files = fs.readdirSync(this.presetPath);
-        for (let i = 0; i < files.length; i++) {
-            files[i] = files[i].replace(".json", "");
+    public getPresets(): Promise<string[]> {
+        return this._config.getPresets(this.id);
+    }
+
+    public async savePreset(name: string): Promise<void> {
+        try {
+            await this._config.savePreset(this.id, name, this.pixels);
+        } catch (error) {
+            console.log(error);
+            return;
         }
-
-        return files;
     }
 
-    savePreset(name: string): void {
-        if (name == null || name == "") return;
-
-        const filename = path.join(this.presetPath, name + ".json");
-        fs.writeFile(filename, JSON.stringify(this.pixels), err => console.log(err));
+    public async loadPreset(name: string): Promise<void> {
+        try {
+            const preset = await this._config.getPreset(this.id, name);
+            this.setPixelsSmooth(preset);
+        } catch (error) {
+            console.log(error);
+            return;
+        }
     }
 
-    loadPreset(name: string): void {
-        if (name == null || name == "") return;
-
-        const filename = path.join(this.presetPath, name + ".json");
-        fs.readFile(filename, (err, data) => {
-            if (err) {
-                console.log(err);
-            }
-            else {
-                this.setPixelsSmooth(JSON.parse(data.toString()));
-
-            }
-        });
-    }
-
-    deletePreset(name: string): void {
-        if (name == null || name == "") return;
-
-        const filename = path.join(this.presetPath, name + ".json");
-        fs.rm(filename, err => console.log(err));
+    public async deletePreset(name: string): Promise<void> {
+        await this._config.deletePreset(this.id, name);
     }
 }
