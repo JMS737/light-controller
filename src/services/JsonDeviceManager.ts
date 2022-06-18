@@ -37,7 +37,7 @@ export default class JsonDeviceManager implements IDeviceManager {
             });
 
             devicesDetails.groups.map(info => {
-                const group = GroupFactory.Create(info.type, info.id, this.devices.filter(d => info.devices.includes(d.id)));
+                const group = GroupFactory.Create(info.type, info.id, info.name, this.devices.filter(d => info.devices.includes(d.id)));
 
                 if (group) {
                     group.initialise();

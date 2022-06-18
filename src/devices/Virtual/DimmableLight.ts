@@ -6,7 +6,16 @@ import Effect from "../../models/Effects/Effect";
 import { Blink, Pulse } from "../../models/Effects/LightingEffects";
 import { IDimmableLight } from "../Abstract/IVirtualLights";
 import { IPhysicalDevice } from "../Abstract/IPhysicalDevice";
-import Light from "./Light";
+import Light, { LightState } from "./Light";
+
+export class DimmableLightState extends LightState {
+    public brightness: number;
+
+    constructor(on: boolean, brightness: number) {
+        super(on);
+        this.brightness = brightness;
+    }
+}
 
 export default class DimmableLight extends Light implements IDimmableLight {
     protected STEPS = 50;
@@ -22,8 +31,35 @@ export default class DimmableLight extends Light implements IDimmableLight {
     private currentBrightnessTask: Promise<void> | undefined;
     private currentBrightnessToken: CancellationToken | undefined;
 
-    constructor(id: number, physical: IPhysicalDevice) {
-        super(id, physical);
+    constructor(id: number, name: string, physical: IPhysicalDevice) {
+        super(id, name, physical);
+    }
+
+    public async identify(): Promise<void> {
+        const originalState = this.state;
+        const originalBrightness = this.brightness;
+        
+        this.brightness = 100;
+
+        this.state = true;
+        this.updateChannels();
+        await delay(1000);
+        this.state = false;
+        this.updateChannels();
+        await delay(1000);
+        this.state = true;
+        this.updateChannels();
+        await delay(1000);
+        this.state = false;
+        this.updateChannels();
+        await delay(1000);
+        this.state = true;
+        this.updateChannels();
+        await delay(1000);
+
+        this.state = originalState;
+        this.brightness = originalBrightness;
+        this.updateChannels();
     }
 
     async setState(state: boolean): Promise<void> {
@@ -111,21 +147,18 @@ export default class DimmableLight extends Light implements IDimmableLight {
         return effects;
     }
 
-    setEffect(effectName: string): boolean {
+    async setEffect(effectName: string): Promise<void> {
         const effect = this.CreateEffect(effectName);
 
         if (effect?.affectsBrightness ?? true) {
             this.currentBrightnessToken?.cancel(true);
         }
 
-        return super.setEffect(effectName);
+        await super.setEffect(effectName);
     }
 
-    getProperties(): any {
-        const properties: any = super.getProperties();
-        properties.brightness = this.brightness;
-
-        return properties;
+    protected getState(): DimmableLightState {
+        return new DimmableLightState(this.state, this.brightness);
     }
 
     updateChannels(): void {

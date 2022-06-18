@@ -21,12 +21,17 @@ export default class RgbLightGroup extends DeviceGroup<IRgbLight> implements IRg
         return this.devices[0].saturation;
     }
 
-    constructor(id: number, lights: IRgbLight[]) {
-        super(id, lights);
+    constructor(id: number, name: string, lights: IRgbLight[]) {
+        super(id, name, lights);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     public initialise(): void {
         
+    }
+
+    public async identify(): Promise<void> {
+        await Promise.all(this.devices.map(async p => await p.identify()));
     }
 
     setState(state: boolean): void {

@@ -1,4 +1,4 @@
-import AddressableRgbStrip from "src/devices/Virtual/AddressableRgbStrip";
+import AddressableRgbStrip from "../../devices/Virtual/AddressableRgbStrip";
 import VirtualDevice from "../../devices/Abstract/VirtualDevice";
 import CancellationToken from "../../helpers/CancellationToken";
 import Scene from "./Scene";

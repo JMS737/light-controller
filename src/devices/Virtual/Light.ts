@@ -1,7 +1,17 @@
 import { DeviceType } from "../../helpers/DeviceType";
-import VirtualDevice from "../Abstract/VirtualDevice";
+import VirtualDevice, { DeviceState } from "../Abstract/VirtualDevice";
 import { ILight } from "../Abstract/IVirtualLights";
 import { IPhysicalDevice } from "../Abstract/IPhysicalDevice";
+import { delay } from "../../helpers/AsyncHelpers";
+
+export class LightState extends DeviceState {
+    public on: boolean;
+
+    constructor(on: boolean) {
+        super();
+        this.on = on;
+    }
+}
 
 export default class Light extends VirtualDevice implements ILight {
     type: DeviceType = DeviceType.BasicLight;
@@ -9,8 +19,8 @@ export default class Light extends VirtualDevice implements ILight {
 
     physical: IPhysicalDevice;
 
-    constructor(id: number, physical: IPhysicalDevice) {
-        super(id);
+    constructor(id: number, name: string, physical: IPhysicalDevice) {
+        super(id, name);
         this.physical = physical;
     }
 
@@ -18,11 +28,24 @@ export default class Light extends VirtualDevice implements ILight {
         this.updateChannels();
     }
 
-    getProperties(): any {
-        const properties: any = super.getProperties();
-        properties.state = this.state;
+    public async identify(): Promise<void> {
+        const originalState = this.state;
 
-        return properties;
+        this.setState(true);
+        await delay(1000);
+        this.setState(false);
+        await delay(1000);
+        this.setState(true);
+        await delay(1000);
+        this.setState(false);
+        await delay(1000);
+        this.setState(true);
+        await delay(1000);
+        this.setState(originalState);
+    }
+
+    protected getState(): LightState {
+        return new LightState(this.state);
     }
 
     setState(state: boolean): void {

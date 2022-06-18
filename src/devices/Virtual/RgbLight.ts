@@ -1,4 +1,4 @@
-import DimmableLight from "./DimmableLight";
+import DimmableLight, { DimmableLightState } from "./DimmableLight";
 import { DeviceType } from "../../helpers/DeviceType";
 import CancellationToken from "../../helpers/CancellationToken";
 import * as hsvHelper from "../../helpers/HsvHelper";
@@ -10,6 +10,17 @@ import { constrain } from "../../helpers/MathHelper";
 import { IPhysicalDevice } from "../Abstract/IPhysicalDevice";
 import Hsv from "../../models/Hsv";
 
+export class RgbLightState extends DimmableLightState {
+    public hue: number;
+    public saturation: number;
+
+    constructor(on: boolean, brightness: number, hue: number, saturation: number) {
+        super(on, brightness);
+        this.hue = hue;
+        this.saturation = saturation;
+    }
+}
+
 export default class RgbLight extends DimmableLight implements IRgbLight {
     type: DeviceType = DeviceType.RgbLight;
     hue = 16;
@@ -18,8 +29,21 @@ export default class RgbLight extends DimmableLight implements IRgbLight {
     protected currentColourTask: Promise<void> | undefined;
     protected currentColourToken: CancellationToken | undefined;
 
-    constructor(id: number, physical: IPhysicalDevice) {
-        super(id, physical);
+    constructor(id: number, name: string, physical: IPhysicalDevice) {
+        super(id, name, physical);
+    }
+
+    public async identify(): Promise<void> {
+        const originalHue = this.hue;
+        const originalSaturation = this.saturation;
+
+        this.hue = 120;
+        this.saturation = 100;
+
+        await super.identify();
+
+        this.hue = originalHue;
+        this.saturation = originalSaturation;
     }
 
     protected validateHsv(hue?: number, saturation?: number, value?: number): Hsv {
@@ -99,25 +123,18 @@ export default class RgbLight extends DimmableLight implements IRgbLight {
         return effects;
     }
 
-    setEffect(effectName: string): boolean {
+    async setEffect(effectName: string): Promise<void> {
         const effect = this.CreateEffect(effectName);
 
         if (effect?.affectsColour ?? true) {
             this.currentColourToken?.cancel();
         }
 
-        return super.setEffect(effectName);
+        await super.setEffect(effectName);
     }
 
-    getProperties(): any {
-        const properties: any = super.getProperties();
-        properties.hsv = {
-            h: this.hue,
-            s: this.saturation,
-            v: this.brightness
-        };
-
-        return properties;
+    protected getState(): RgbLightState {
+        return new RgbLightState(this.state, this.brightness, this.hue, this.saturation);
     }
 
     updateChannels(): void {

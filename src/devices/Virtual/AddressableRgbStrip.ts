@@ -4,7 +4,7 @@ import Hsv from "../../models/Hsv";
 import Rgb from "../../models/Rgb";
 import { IAddressableRgbLight as IAddressableRgbLight } from "../Abstract/IVirtualLights";
 import WS2812B from "../Physical/WS2812B";
-import RgbLight from "./RgbLight";
+import RgbLight, { RgbLightState } from "./RgbLight";
 import colorsys from 'colorsys';
 import { Animations } from "../../models/Animations";
 import fs from "fs";
@@ -16,6 +16,27 @@ import { DeviceType } from "../../helpers/DeviceType";
 import { Scroll } from "../../models/Effects/AddressableLightEffects";
 import IConfiguration from "../../services/IConfiguraiton";
 import SceneManager from "../../services/SceneManager";
+import { DeviceInfo } from "../Abstract/VirtualDevice";
+
+export class PixelState {
+    public values: Rgb[];
+    public count: number;
+
+    constructor(pixels: Rgb[]) {
+        this.values = pixels;
+        this.count = pixels.length;
+    }
+}
+
+export class AddressableRgbStripState extends RgbLightState {
+    public pixels: PixelState;
+
+    constructor(on: boolean, brightness: number, hue: number, saturation: number, pixels: Rgb[]) {
+        super(on, brightness, hue, saturation);
+        this.pixels = new PixelState(pixels);
+    }
+
+}
 
 export default class AddressableRgbStrip extends RgbLight implements IAddressableRgbLight {
 
@@ -31,8 +52,8 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
     private _config: IConfiguration;
     private _scenes: SceneManager;
 
-    constructor(id: number, physical: WS2812B, config: IConfiguration, scenes: SceneManager) {
-        super(id, physical);
+    constructor(id: number, name: string, physical: WS2812B, config: IConfiguration, scenes: SceneManager) {
+        super(id, name, physical);
 
         this.type = DeviceType.WS2812B;
         this.physical = physical;
@@ -41,6 +62,19 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
         this._scenes = scenes;
 
         this.initializePresets();
+    }
+
+    public async identify(): Promise<void> {
+        const originalPixels = [...this.pixels];
+
+        for (let i = 0; i < this.pixels.length; i++) {
+            this.pixels[i] = new Rgb(0, 255, 0);
+        }
+
+        await super.identify();
+
+        this.pixels = originalPixels;
+        this.updateChannels();
     }
 
     initializePresets(): void {
@@ -135,12 +169,17 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
         this.effects = this.physical.effects;
     }
 
-    getProperties(): unknown {
-        const properties = super.getProperties();
-        properties.pixelCount = this.pixelCount;
-        properties.pixels = this.pixels;
+    async getProperties(): Promise<DeviceInfo> {
+        const properties = await super.getProperties();
+
+        const presets = await this.getPresets();
+        properties.effects.list = properties.effects.list.concat(presets);
 
         return properties;
+    }
+
+    protected getState(): AddressableRgbStripState {
+        return new AddressableRgbStripState(this.state, this.brightness, this.hue, this.saturation, this.pixels);
     }
 
     getEffects(): Effect[] {
@@ -158,14 +197,15 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
         return effects;
     }
 
-    setEffect(effectName: string): boolean {
-        this.physical.setEffect("no effect");
-        if (super.setEffect(effectName)) {
-            return true;
+    async setEffect(effectName: string): Promise<void> {
+        if (this.getEffects().some(p => p.id == effectName)) {
+            this.physical.setEffect("no effect");
+            await super.setEffect(effectName);
+            this.physical.setEffect(effectName);
         }
-
-        this.physical.setEffect(effectName);
-        return true;
+        else {
+            await this.loadPreset(effectName);
+        }
     }
 
     setColours(colours: Hsv[], interpolationType = "rgb"): void {

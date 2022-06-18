@@ -8,6 +8,7 @@ export default class Devices {
 
 class Group {
     id!: number;
+    name!: string;
     type!: DeviceType;
     devices!: number[];
 }
