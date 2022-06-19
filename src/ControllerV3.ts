@@ -67,10 +67,10 @@ export default class ControllerV3 {
         const guid = uuid();
         const id = parseInt(req.params.id);
         const device = this._deviceManager.getDevice(id);
-        console.log(`[${guid}] Received state update for device '${id}'`);
+        // console.log(`[${guid}] Received state update for device '${id}'`);
         
         if (device) {
-            console.log(`[${guid}] Device found for '${id}'`);
+            // console.log(`[${guid}] Device found for '${id}'`);
 
             let on: boolean | undefined;
             let brightness: number | undefined;
