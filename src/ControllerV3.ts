@@ -67,6 +67,7 @@ export default class ControllerV3 {
         const device = this._deviceManager.getDevice(id);
 
         if (device) {
+            let on: boolean | undefined;
             let brightness: number | undefined;
             let hue: number | undefined;
             let saturation: number | undefined;
@@ -74,19 +75,19 @@ export default class ControllerV3 {
             let colors: Hsv[] | undefined;
             let interpolation = "rgb";
 
-            const on = req.body.on as boolean;
-
-            if (req.body && req.body.brightness)
+            if (req.body.on)
+                on = req.body.on.value as boolean;
+            if (req.body.brightness)
                 brightness = req.body.brightness.value as number;
-            if (req.body && req.body.hue)
+            if (req.body.hue)
                 hue = req.body.hue.value as number;
-            if (req.body && req.body.saturation)
+            if (req.body.saturation)
                 saturation = req.body.saturation.value as number;
-            if (req.body && req.body.pixels)
+            if (req.body.pixels)
                 pixels = req.body.pixels as Rgb[];
-            if (req.body && req.body.colors)
+            if (req.body.colors)
                 colors = req.body.colors.values as Hsv[];
-            if (req.body && req.body.colors)
+            if (req.body.colors)
                 interpolation = req.body.colors.interpolation as string ?? "rgb";
 
             if (on != undefined) {
