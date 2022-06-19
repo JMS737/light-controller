@@ -173,7 +173,7 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
         const properties = await super.getProperties();
 
         const presets = await this.getPresets();
-        properties.effects.list = properties.effects.list.concat(presets);
+        properties.effects.values = properties.effects.values.concat(presets);
 
         return properties;
     }

@@ -2,7 +2,7 @@ import { DeviceType } from "../../helpers/DeviceType";
 import Effect, { ExternalEffect, NoEffect } from "../../models/Effects/Effect";
 
 export class EffectInfo {
-    public list: string[] = [];
+    public values: string[] = [];
     public select = "";
 }
 
@@ -80,7 +80,7 @@ export default abstract class VirtualDevice {
             model: this.type,
             state: this.getState(),
             effects: {
-                list: this.getEffects().map(p => p.id),
+                values: this.getEffects().map(p => p.id),
                 select: this._currentEffect?.id ?? ""
             }
         };
