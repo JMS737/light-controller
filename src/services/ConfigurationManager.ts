@@ -2,7 +2,7 @@ import Palette from "../models/Effects/Palette";
 import { SceneDto } from "../models/Effects/Scene";
 import Rgb from "../models/Rgb";
 import IConfiguration from "./IConfiguraiton";
-import { close, promises as fs } from "fs";
+import { promises as fs, mkdirSync } from "fs";
 import path from "path";
 
 export default class ConfigurationManager implements IConfiguration {
@@ -19,27 +19,29 @@ export default class ConfigurationManager implements IConfiguration {
         this.init();
     }
 
-    private async init() {
+    private init() {
+        console.log("Creating directories");
         try {
-            await fs.mkdir(this._configPath);
+            mkdirSync(this._presetPath, { recursive: true });
         } catch (error) {
+            // console.log(error);
             // Do nothing
         }
+        console.log("Created preset folder");
         try {
-            await fs.mkdir(this._presetPath);
+            mkdirSync(this._palettePath, { recursive: true });
         } catch (error) {
+            // console.log(error);
             // Do nothing
         }
+        console.log("Created palette folder");
         try {
-            await fs.mkdir(this._palettePath);
+            mkdirSync(this._scenePath, { recursive: true });
         } catch (error) {
+            // console.log(error);
             // Do nothing
         }
-        try {
-            await fs.mkdir(this._scenePath);
-        } catch (error) {
-            // Do nothing
-        }
+        console.log("Created scene folder");
     }
 
     //#region Presets

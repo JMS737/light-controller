@@ -14,14 +14,14 @@ export default class ControllerV3 {
         this._app = express;
     }
 
-    public map_endpoints(): void {
-        this._app.get('/api/v3', this.GetAll);
-        this._app.get('/api/v3/:id', this.Get);
-        this._app.put('/api/v3/:id/state', this.PutState);
-        this._app.put('/api/v3/:id/effects', this.PutEffect);
-        this._app.put('/api/v3/:id/identify', this.PutIdentify);
-        this._app.put('/api/v3/:id/presets', this.PutSavePreset);
-        this._app.delete('/api/v3/:id/presets', this.DeletePreset);
+    public async map_endpoints(): Promise<void> {
+        this._app.get('/api/v3', (req, res) => this.GetAll(req,res));
+        this._app.get('/api/v3/:id', (req, res) => this.Get(req,res));
+        this._app.put('/api/v3/:id/state', (req, res) => this.PutState(req,res));
+        this._app.put('/api/v3/:id/effects', (req, res) => this.PutEffect(req,res));
+        this._app.put('/api/v3/:id/identify', (req, res) => this.PutIdentify(req,res));
+        this._app.put('/api/v3/:id/presets', (req, res) => this.PutSavePreset(req,res));
+        this._app.delete('/api/v3/:id/presets', (req, res) => this.DeletePreset(req,res));
     }
 
     // GET /api/v3

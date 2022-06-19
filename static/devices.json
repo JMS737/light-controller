@@ -1,7 +1,8 @@
 {
     "devices": [
         {
-            "id": 4,
+            "id": 1,
+            "name": "Desk Light",
             "type": "light-ws2812b",
             "physicalInfo": {
                 "pin": 18,

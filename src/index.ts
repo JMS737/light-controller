@@ -8,6 +8,7 @@ import DeviceFactory from "./helpers/DeviceFactory";
 import ConfigurationManager from "./services/ConfigurationManager";
 import SceneManager from "./services/SceneManager";
 import ControllerV3 from "./ControllerV3";
+import { exit } from "process";
 
 // initialise configuration.
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -21,24 +22,24 @@ app.use(bodyParser.urlencoded({
 }));
 
 const deviceFilename = process.env.DEVICE_FILE;
+const config = new ConfigurationManager();
+let deviceManager: IDeviceManager;
+const sceneManager = new SceneManager(config);
 
-let deviceManager: IDeviceManager | undefined;
-const sceneManager = new SceneManager(new ConfigurationManager());
-
-const factory = new DeviceFactory(new ConfigurationManager(), sceneManager);
+const factory = new DeviceFactory(config, sceneManager);
 
 if (deviceFilename) {
     console.log(`Devices file: '${deviceFilename}'`);
     deviceManager = new JsonDeviceManager(path.join(__dirname, deviceFilename), factory);
-    deviceManager.loadDevices((devices) => {
-        console.log(`Loaded ${devices.length} devices.`);
-    });
+
+    deviceManager.loadDevices();
 
 } else {
     console.log('Please specify a devices file in "__dirname/.env" using the key DEVICE_FILE=<filename>');
+    exit();
 }
 
-const controllerV3 = new ControllerV3(app, deviceManager as IDeviceManager);
+const controllerV3 = new ControllerV3(app, deviceManager);
 controllerV3.map_endpoints();
 
 app.listen(port, () => {

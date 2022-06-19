@@ -186,7 +186,7 @@ export default class AddressableRgbStrip extends RgbLight implements IAddressabl
         const effects = super.getEffects();
         const scenes = this._scenes.scenes;
         scenes.forEach(s => {
-            effects.push(new SceneEffect(s))
+            effects.push(new SceneEffect(s));
         });
         effects.push(new Scroll());
         // effects.push(new Flow());
