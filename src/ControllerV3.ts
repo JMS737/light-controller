@@ -117,6 +117,8 @@ export default class ControllerV3 {
                 message: 'Device not found.'
             });
         }
+
+        res.status(200).send();
     }
 
     // PUT /api/v3/{id}/effects
@@ -139,6 +141,8 @@ export default class ControllerV3 {
                 message: 'Device not found.'
             });
         }
+
+        res.status(200).send();
     }
 
     // PUT /api/v3/{id}/identify
@@ -154,6 +158,8 @@ export default class ControllerV3 {
                 message: 'Device not found.'
             });
         }
+        
+        res.status(200).send();
     }
 
     // PUT /api/v3/{id}/presets
