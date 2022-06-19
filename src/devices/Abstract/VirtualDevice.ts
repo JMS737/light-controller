@@ -3,7 +3,7 @@ import Effect, { ExternalEffect, NoEffect } from "../../models/Effects/Effect";
 
 export class EffectInfo {
     public list: string[] = [];
-    public select: string | undefined;
+    public select = "";
 }
 
 export class DeviceState {
@@ -81,7 +81,7 @@ export default abstract class VirtualDevice {
             state: this.getState(),
             effects: {
                 list: this.getEffects().map(p => p.id),
-                select: this._currentEffect?.id
+                select: this._currentEffect?.id ?? ""
             }
         };
     }
