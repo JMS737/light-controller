@@ -1,4 +1,5 @@
 import express from "express";
+import {v4 as uuid} from 'uuid'
 import { IAddressableRgbLight, IDimmableLight, ILight, IRgbLight } from "./devices/Abstract/IVirtualLights";
 import { DeviceInfo } from "./devices/Abstract/VirtualDevice";
 import Hsv from "./models/Hsv";
@@ -63,11 +64,14 @@ export default class ControllerV3 {
 
     // PUT /api/v3/{id}/state
     private PutState(req: any, res: any): void {
-        console.log(`Received state update ${req.body}`);
+        const guid = uuid();
         const id = parseInt(req.params.id);
         const device = this._deviceManager.getDevice(id);
-
+        console.log(`[${guid}] Received state update for device '${id}`);
+        
         if (device) {
+            console.log(`[${guid}] Device found for '${id}`);
+
             let on: boolean | undefined;
             let brightness: number | undefined;
             let hue: number | undefined;
