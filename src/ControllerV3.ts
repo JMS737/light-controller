@@ -67,7 +67,6 @@ export default class ControllerV3 {
         const device = this._deviceManager.getDevice(id);
 
         if (device) {
-            let on: boolean | undefined;
             let brightness: number | undefined;
             let hue: number | undefined;
             let saturation: number | undefined;
@@ -75,20 +74,20 @@ export default class ControllerV3 {
             let colors: Hsv[] | undefined;
             let interpolation = "rgb";
 
-            if (req.body.state)
-                on = req.body.state.on as boolean;
-            if (req.body.state && req.body.state.brightness)
-                brightness = req.body.state.brightness.value as number;
-            if (req.body.state && req.body.state.hue)
-                hue = req.body.state.hue.value as number;
-            if (req.body.state && req.body.state.saturation)
-                saturation = req.body.state.saturation.value as number;
-            if (req.body.state && req.body.state.pixels)
-                pixels = req.body.state.pixels as Rgb[];
-            if (req.body.state && req.body.state.colors)
-                colors = req.body.state.colors.values as Hsv[];
-            if (req.body.state && req.body.state.colors)
-                interpolation = req.body.state.colors.interpolation as string ?? "rgb";
+            const on = req.body.on as boolean;
+
+            if (req.body && req.body.brightness)
+                brightness = req.body.brightness.value as number;
+            if (req.body && req.body.hue)
+                hue = req.body.hue.value as number;
+            if (req.body && req.body.saturation)
+                saturation = req.body.saturation.value as number;
+            if (req.body && req.body.pixels)
+                pixels = req.body.pixels as Rgb[];
+            if (req.body && req.body.colors)
+                colors = req.body.colors.values as Hsv[];
+            if (req.body && req.body.colors)
+                interpolation = req.body.colors.interpolation as string ?? "rgb";
 
             if (on != undefined) {
                 (device as ILight).setState(on);
