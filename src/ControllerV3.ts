@@ -67,10 +67,10 @@ export default class ControllerV3 {
         const guid = uuid();
         const id = parseInt(req.params.id);
         const device = this._deviceManager.getDevice(id);
-        console.log(`[${guid}] Received state update for device '${id}`);
+        console.log(`[${guid}] Received state update for device '${id}'`);
         
         if (device) {
-            console.log(`[${guid}] Device found for '${id}`);
+            console.log(`[${guid}] Device found for '${id}'`);
 
             let on: boolean | undefined;
             let brightness: number | undefined;
@@ -132,10 +132,7 @@ export default class ControllerV3 {
         const device = this._deviceManager.getDevice(id);
 
         if (device) {
-            let effect: string | undefined;
-
-            if (req.body.effects)
-                effect = req.body.effects.select as string;
+            const effect = req.body.select as string;
 
             if (effect) {
                 device.setEffect(effect);
