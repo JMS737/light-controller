@@ -40,20 +40,18 @@ export default class DimmableLight extends Light implements IDimmableLight {
         const originalBrightness = this.brightness;
         
         this.brightness = 100;
-
-        this.state = true;
         this.updateChannels();
         await delay(1000);
-        this.state = false;
+        this.brightness = 0;
         this.updateChannels();
         await delay(1000);
-        this.state = true;
+        this.brightness = 100;
         this.updateChannels();
         await delay(1000);
-        this.state = false;
+        this.brightness = 0;
         this.updateChannels();
         await delay(1000);
-        this.state = true;
+        this.brightness = 100;
         this.updateChannels();
         await delay(1000);
 
