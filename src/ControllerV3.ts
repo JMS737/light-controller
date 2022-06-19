@@ -67,13 +67,28 @@ export default class ControllerV3 {
         const device = this._deviceManager.getDevice(id);
 
         if (device) {
-            const on = req.body.state.on as boolean;
-            const brightness = req.body.state.brightness.value as number;
-            const hue = req.body.state.hue.value as number;
-            const saturation = req.body.state.saturation.value as number;
-            const pixels = req.body.state.pixels as Rgb[];
-            const colors = req.body.state.colors.values as Hsv[];
-            const interpolation = req.body.state.colors.interpolation as string ?? "rgb";
+            let on: boolean | undefined;
+            let brightness: number | undefined;
+            let hue: number | undefined;
+            let saturation: number | undefined;
+            let pixels: Rgb[] | undefined;
+            let colors: Hsv[] | undefined;
+            let interpolation = "rgb";
+
+            if (req.body.state)
+                on = req.body.state.on as boolean;
+            if (req.body.state && req.body.state.brightness)
+                brightness = req.body.state.brightness.value as number;
+            if (req.body.state && req.body.state.hue)
+                hue = req.body.state.hue.value as number;
+            if (req.body.state && req.body.state.saturation)
+                saturation = req.body.state.saturation.value as number;
+            if (req.body.state && req.body.state.pixels)
+                pixels = req.body.state.pixels as Rgb[];
+            if (req.body.state && req.body.state.colors)
+                colors = req.body.state.colors.values as Hsv[];
+            if (req.body.state && req.body.state.colors)
+                interpolation = req.body.state.colors.interpolation as string ?? "rgb";
 
             if (on != undefined) {
                 (device as ILight).setState(on);
@@ -110,7 +125,10 @@ export default class ControllerV3 {
         const device = this._deviceManager.getDevice(id);
 
         if (device) {
-            const effect = req.body.effects.select as string;
+            let effect: string | undefined;
+
+            if (req.body.effects)
+                effect = req.body.effects.select as string;
 
             if (effect) {
                 device.setEffect(effect);
