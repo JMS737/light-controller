@@ -63,6 +63,7 @@ export default class ControllerV3 {
 
     // PUT /api/v3/{id}/state
     private PutState(req: any, res: any): void {
+        console.log(`Received state update ${req.body}`);
         const id = parseInt(req.params.id);
         const device = this._deviceManager.getDevice(id);
 
@@ -158,7 +159,7 @@ export default class ControllerV3 {
                 message: 'Device not found.'
             });
         }
-        
+
         res.status(200).send();
     }
 
