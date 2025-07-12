@@ -1,4 +1,12 @@
 # Light Controller
+
+## TODO
+- Only spawn the GpioService if a device is setup to use it (this will hopefully stop it failing if the pigpiod library is not installed, i.e. when running on Ubuntu).
+- Automatically create the .config directories required for operation.
+- Include some default .config values.
+- Test if the .env file is actually needed.
+- Change 'python' to 'python3' in the MicroserviceDevice.ts file.
+
 ## Overview
 Provides a Web API interface for controlling devices attached to the GPIO pins on the Raspberry Pi.
 
